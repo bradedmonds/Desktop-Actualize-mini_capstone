@@ -1,6 +1,11 @@
 class Api::ProductsController < ApplicationController
   def index
-    @products = Product.all
+
+    if params[:sort] == "price" && params[:sort_order] == "desc"
+      @products = Product.order(price: :desc) 
+    else 
+      @products = Product.all
+    end
     render "index.json.jb"
   end
 
@@ -16,8 +21,11 @@ class Api::ProductsController < ApplicationController
       image_url: params[:image],
       description: params[:description]
     )
-    @product.save
-    render "show.json.jb"
+    if @product.save
+      render "show.json.jb"
+    else
+      render json: {errors: @product.errors.full_messages}
+    end
   end
 
   def update
@@ -26,7 +34,12 @@ class Api::ProductsController < ApplicationController
     @product.price = params[:price] || @product.price
     @product.description = params[:description] || @product.description
     @product.image_url = params[:image_url] || @product.image_url
-    render "show.json.jb"
+
+    if @product.save
+      render "show.json.jb"
+    else
+      render json: {errors: @product.errors.full_messages}
+    end
   end
 
   def destroy
@@ -35,3 +48,4 @@ class Api::ProductsController < ApplicationController
     render json: {message: "You have deleted the product"}
   end
 end
+
