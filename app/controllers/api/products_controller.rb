@@ -6,6 +6,8 @@ class Api::ProductsController < ApplicationController
     else 
       @products = Product.all
     end
+
+    # p current_user
     render "index.json.jb"
   end
 
